@@ -2,7 +2,7 @@
 name = "tz-convert"
 author = "Little Clover <littleclover909@gmail.com>"
 version = "1.0.0"
-edition = "2022"
+edition = "2021"
 about = "A simple timezone converter"
 license = "GPL-3.0-or-later"
 
