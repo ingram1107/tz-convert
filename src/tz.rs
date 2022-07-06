@@ -26,9 +26,14 @@ pub enum Timezone {
     UTC, // Coordinated Universal Time, also GTM
 
     // positive offset
-    CEST, // Cetral European Summer Time
-    MYT,  // Malaysia Time
-    JST,  // Japan Standard Time
+    CEST,  // Cetral European Summer Time
+    MYT,   // Malaysia Time
+    AWST,  // Australian Western Standard Time
+    ACWST, // Australian Central Western Standard Time
+    JST,   // Japan Standard Time
+    ACST,  // Australian Central Standard Time
+    AEST,  // Australian Eastern Standard Time
+    LHST,  // Lord Howe Standard Time
 
     // negative offset
     EDT, // Eastern Daylight Time
@@ -45,7 +50,12 @@ impl Timezone {
             Self::UTC => 0.0,
             Self::CEST => 2.0,
             Self::MYT => 8.0,
+            Self::AWST => 8.0,
+            Self::ACWST => 8.75,
             Self::JST => 9.0,
+            Self::ACST => 9.5,
+            Self::AEST => 10.0,
+            Self::LHST => 10.5,
         }
     }
 
@@ -57,7 +67,12 @@ impl Timezone {
             Self::UTC => String::from("UTC"),
             Self::CEST => String::from("CEST"),
             Self::MYT => String::from("MYT"),
+            Self::AWST => String::from("AWST"),
+            Self::ACWST => String::from("ACWST"),
             Self::JST => String::from("JST"),
+            Self::ACST => String::from("ACST"),
+            Self::AEST => String::from("AEST"),
+            Self::LHST => String::from("LHST"),
         }
     }
 }
@@ -70,7 +85,12 @@ impl FromStr for Timezone {
             "UTC" | "GMT" => Ok(Timezone::UTC),
             "CEST" => Ok(Timezone::CEST),
             "MYT" => Ok(Timezone::MYT),
+            "AWST" => Ok(Timezone::AWST),
+            "ACWST" => Ok(Timezone::ACWST),
             "JST" => Ok(Timezone::JST),
+            "ACST" => Ok(Timezone::ACST),
+            "AEST" => Ok(Timezone::AEST),
+            "LHST" => Ok(Timezone::LHST),
             "EDT" => Ok(Timezone::EDT),
             "EST" => Ok(Timezone::EST),
             "PDT" => Ok(Timezone::PDT),
