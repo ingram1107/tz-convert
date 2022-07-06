@@ -37,15 +37,15 @@ pub enum Timezone {
 }
 
 impl Timezone {
-    pub fn offset(&self) -> i8 {
+    pub fn offset(&self) -> f32 {
         match self {
-            Self::PDT => -7,
-            Self::EST => -5,
-            Self::EDT => -4,
-            Self::UTC => 0,
-            Self::CEST => 2,
-            Self::MYT => 8,
-            Self::JST => 9,
+            Self::PDT => -7.0,
+            Self::EST => -5.0,
+            Self::EDT => -4.0,
+            Self::UTC => 0.0,
+            Self::CEST => 2.0,
+            Self::MYT => 8.0,
+            Self::JST => 9.0,
         }
     }
 
@@ -85,7 +85,10 @@ pub fn convert_time(time_orig: &str, source: Timezone, target: Timezone) -> Stri
     let re = Regex::new(r"([0-1][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])").unwrap();
     let caps = re.captures(time_orig).unwrap();
 
-    let hh_orig: i8 = caps.get(1).map_or(0, |m| m.as_str().parse::<i8>().unwrap());
+    // TODO: Decouple to function convert_hour
+    let hh_orig: f32 = caps
+        .get(1)
+        .map_or(0.0, |m| m.as_str().parse::<f32>().unwrap());
     // Equation:
     //      time in zone A - (UTC offset for zone A) + (UTC offset for zone B) = time in zone B
     //
@@ -96,22 +99,39 @@ pub fn convert_time(time_orig: &str, source: Timezone, target: Timezone) -> Stri
     // Solutions:
     //      1. Mod the result from equation
     //      2. Use equation 24 + hh to normalise the negative result
-    let hh_converted: i8 = (hh_orig - source.offset() + target.offset()) % 24;
-    let hh_new = if hh_converted.is_negative() {
-        24 + hh_converted
+    let hh_converted: f32 = (hh_orig - source.offset() + target.offset()) % 24.0;
+    let mm_offset: f32 = hh_converted % 1.0;
+    let mut hh_new = if hh_converted.is_sign_negative() {
+        24.0 + hh_converted - mm_offset
     } else {
-        hh_converted
+        hh_converted - mm_offset
     };
 
-    //TODO might need to change
-    let mm = caps.get(2).map_or("", |m| m.as_str());
+    // TODO: Decouple to function convert_minute
+    let mm_orig = caps
+        .get(2)
+        .map_or(0.0, |m| m.as_str().parse::<f32>().unwrap());
+    let mm_converted: f32 = mm_offset.abs() * 60.0 + mm_orig;
+    let mm_new = if mm_converted >= 60.0 {
+        hh_new = hh_new + 1.0;
+        mm_converted - 60.0
+    } else {
+        mm_converted
+    };
+
     let ss = caps.get(3).map_or("", |m| m.as_str());
 
-    let hh_string = if hh_new < 10 {
+    let hh_string = if hh_new < 10.0 {
         "0".to_owned() + hh_new.to_string().as_str()
     } else {
         hh_new.to_string()
     };
 
-    hh_string + ":" + mm + ":" + ss
+    let mm_string = if mm_new < 10.0 {
+        "0".to_owned() + mm_new.to_string().as_str()
+    } else {
+        mm_new.to_string()
+    };
+
+    hh_string + ":" + &mm_string + ":" + ss
 }
