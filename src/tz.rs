@@ -23,17 +23,17 @@ impl fmt::Debug for TimezoneNotSupportedErr {
 }
 
 pub enum Timezone {
-    UTC, // also GTM
+    UTC, // Coordinated Universal Time, also GTM
 
     // positive offset
-    CEST,
-    MYT,
-    JST,
+    CEST, // Cetral European Summer Time
+    MYT,  // Malaysia Time
+    JST,  // Japan Standard Time
 
     // negative offset
-    EDT,
-    EST,
-    PDT,
+    EDT, // Eastern Daylight Time
+    EST, // Eastern Standard Time
+    PDT, // Pacific Daylight Time
 }
 
 impl Timezone {
